@@ -11,6 +11,14 @@ function App() {
   const selectedPlace = useRef();
   const [pickedPlaces, setPickedPlaces] = useState([]);
 
+  navigator.geolocation.getCurrentPosition((position) => {
+    const sortedPlaces = sortPlacesByDistance(
+      AVAILABLE_PLACES,
+      position.coords.altitude,
+      position.coords.longitude
+    );
+  });
+
   function handleStartRemovePlace(id) {
     modal.current.open();
     selectedPlace.current = id;

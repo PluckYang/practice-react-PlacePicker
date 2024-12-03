@@ -1,23 +1,29 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 
 import Places from "./components/Places";
 import { AVAILABLE_PLACES } from "./data";
 import Modal from "./components/Modal";
 import DeleteConfirmation from "./components/DeleteConfirmation";
 import logoImg from "./assets/logo.png";
+import { sortPlacesByDistance } from "./loc.js";
 
 function App() {
   const modal = useRef();
   const selectedPlace = useRef();
+  const [availablePlacce, setAvailablePlacce] = useState([]);
   const [pickedPlaces, setPickedPlaces] = useState([]);
 
-  navigator.geolocation.getCurrentPosition((position) => {
-    const sortedPlaces = sortPlacesByDistance(
-      AVAILABLE_PLACES,
-      position.coords.altitude,
-      position.coords.longitude
-    );
-  });
+  useEffect(() => {
+    navigator.geolocation.getCurrentPosition((position) => {
+      const sortedPlaces = sortPlacesByDistance(
+        AVAILABLE_PLACES,
+        position.coords.latitude,
+        position.coords.longitude
+      );
+
+      setAvailablePlacce(sortedPlaces);
+    });
+  }, []);
 
   function handleStartRemovePlace(id) {
     modal.current.open();
@@ -71,7 +77,8 @@ function App() {
         />
         <Places
           title="Available Places"
-          places={AVAILABLE_PLACES}
+          places={availablePlacce}
+          fallbackText="Sorting places by distance..."
           onSelectPlace={handleSelectPlace}
         />
       </main>

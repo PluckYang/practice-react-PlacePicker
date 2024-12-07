@@ -7,11 +7,16 @@ import DeleteConfirmation from "./components/DeleteConfirmation";
 import logoImg from "./assets/logo.png";
 import { sortPlacesByDistance } from "./loc.js";
 
+const storedIds = JSON.parse(localStorage.getItem("selectedPlace")) || [];
+const storedPlaces = storedIds.map((id) =>
+  AVAILABLE_PLACES.find((Place) => Place.id === id)
+);
+
 function App() {
   const modal = useRef();
   const selectedPlace = useRef();
   const [availablePlacce, setAvailablePlacce] = useState([]);
-  const [pickedPlaces, setPickedPlaces] = useState([]);
+  const [pickedPlaces, setPickedPlaces] = useState(storedPlaces);
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition((position) => {
@@ -54,6 +59,12 @@ function App() {
       prevPickedPlaces.filter((place) => place.id !== selectedPlace.current)
     );
     modal.current.close();
+
+    const storedIds = JSON.parse(localStorage.getItem("selectedPlace")) || [];
+    localStorage.setItem(
+      "selectedPlace",
+      JSON.stringify(storedIds.filter((id) => id !== selectedPlace.current))
+    );
   }
 
   return (
